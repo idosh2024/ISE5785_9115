@@ -24,6 +24,21 @@ public class Ray {
         this.dir = dir.normalize(); // must be unit vector
     }
 
+    /**
+     * Returns the head point of the ray. (had to give it a getter for tube+cylinder)
+     */
+    public Point getP0() {
+        return p0;
+    }
+
+    /**
+     * Returns the direction of the ray. (had to give it a getter for tube+cylinder)
+     */
+    public Vector getDir() {
+        return dir;
+    }
+
+
     /// implementation of equals and toString
     @Override
     public boolean equals(Object obj) {

@@ -1,9 +1,6 @@
 package geometries;
 
 import primitives.*;
-
-import java.util.List;
-
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
@@ -49,9 +46,13 @@ public class Plane extends Geometry {
         return normal;
     }
 
+    // In src/geometries/Plane.java
     @Override
     public String toString() {
-        return "Plane{" + "p=" + p + ", normal=" + normal + "}";
+        return "Plane{" +
+                "point=" + p +
+                ", normal=" + normal +
+                '}';
     }
 
 }

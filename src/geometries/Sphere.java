@@ -34,9 +34,13 @@ public class Sphere extends RadialGeometry {
         return point.subtract(center).normalize();
     }
 
+    // In src/geometries/Sphere.java
     @Override
     public String toString() {
-        return "Sphere{center=" + center + ", radius=" + radius + "}";
+        return "Sphere{" +
+                "center=" + center +
+                ", radius=" + radius +
+                '}';
     }
 
 }
