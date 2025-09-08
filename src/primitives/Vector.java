@@ -2,6 +2,10 @@ package primitives;
 
 public class Vector extends Point {
 
+    public static Vector AXIS_X = new Vector(1, 0, 0);
+    public static Vector AXIS_Y = new Vector(0, 1, 0);
+    public static Vector AXIS_Z = new Vector(0, 0, 1);
+
     /** Ctor from three coordinates. Throws if zero vector. */
     public Vector(double x, double y, double z) {
         super(x, y, z); // calling the point ctor
