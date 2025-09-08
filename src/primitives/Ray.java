@@ -25,10 +25,16 @@ public class Ray {
     }
 
     /**
-     * Returns the head point of the ray. (had to give it a getter for tube+cylinder)
+     * Calculate a point on the rays line at a distance t from the head
+     *
+     * @param t the distance from the head
+     * @return the point on the rays line at the distance t from the head
      */
-    public Point getP0() {
-        return p0;
+    public Point getPoint(double t) {
+        // if t is zero, return the head point
+        if (Util.isZero(t))
+            return p0;
+        return p0.add(dir.scale(t));
     }
 
     /**

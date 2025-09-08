@@ -1,6 +1,10 @@
 package geometries;
 
 import primitives.*;
+
+import java.util.List;
+import static java.util.List.of;
+
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
@@ -53,6 +57,25 @@ public class Plane extends Geometry {
                 "point=" + p +
                 ", normal=" + normal +
                 '}';
+    }
+
+    /// Finding intersections by the formula:
+    /// t = (N · (Q0 - P0)) / (N · V
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        var p0 = ray.getPoint(0);
+        var v  = ray.getDir();
+
+        double nv = normal.dotProduct(v);
+        if (isZero(nv)) return null; // parallel (includes "ray lies in plane")
+
+        // Safe numerator: if p0 == q0, the numerator is 0 without building a vector
+        double nQMinusP0 = p0.equals(p) ? 0 : normal.dotProduct(p.subtract(p0));
+
+        double t = alignZero(nQMinusP0 / nv);
+        if (t <= 0) return null;     // don't return head or behind the head
+
+        return of(ray.getPoint(t));
     }
 
 }

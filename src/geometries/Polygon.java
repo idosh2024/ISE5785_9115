@@ -45,7 +45,8 @@ public class Polygon extends Geometry {
       this.vertices = List.of(vertices);
       size          = vertices.length;
 
-      // Generate the plane according to the first three vertices and associate the
+      // Generate the plane according t
+       // o the first three vertices and associate the
       // polygon with this plane.
       // The plane holds the invariant normal (orthogonal unit) vector to the polygon
       plane         = new Plane(vertices[0], vertices[1], vertices[2]);
@@ -79,5 +80,58 @@ public class Polygon extends Geometry {
 
    @Override
    public Vector getNormal(Point point) { return plane.getNormal(point); }
+
+    /// Finding intersections of a polygon
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        // 1) Intersect ray with the hosting plane (already enforces t > 0, parallel cases, etc.)
+        List<Point> planeHits = plane.findIntersections(ray);
+        if (planeHits == null) return null;         // no plane hit → no polygon hit
+
+        Point  P = planeHits.getFirst();                // plane gives at most one point
+        Vector n = plane.getNormal(P);              // polygon/plane normal
+        int    nVerts = vertices.size();
+
+        // 2) Point-in-convex-polygon test using consistent orientation of edge-cross-point vectors
+        // First edge (to establish the required sign)
+        double s0;
+        try {
+            Vector edge0 = vertices.get(1).subtract(vertices.get(0));
+            Vector toP0  = P.subtract(vertices.get(0));   // if P equals vertex → zero → caught below
+            s0 = alignZero(n.dotProduct(edge0.crossProduct(toP0)));
+        } catch (IllegalArgumentException ex) {
+            // Cross product (or subtract) produced a zero vector → P on vertex/edge → exclude
+            return null;
+        }
+        if (isZero(s0)) return null;               // on edge/vertex → exclude
+        boolean positive = s0 > 0;
+
+        // Remaining edges
+        for (int i = 1; i < nVerts; i++) {
+            Point  vi = vertices.get(i);
+            Point  vj = vertices.get((i + 1) % nVerts);
+
+            // If P coincides with a vertex → exclude
+            if (P.equals(vi)) return null;
+
+            double s;
+            try {
+                Vector edge = vj.subtract(vi);
+                Vector toP  = P.subtract(vi);
+                s = alignZero(n.dotProduct(edge.crossProduct(toP)));
+            } catch (IllegalArgumentException ex) {
+                // zero vector → P colinear with edge (on edge) or equals a vertex
+                return null;
+            }
+
+            if (isZero(s)) return null;            // on edge/vertex → exclude
+            if ((s > 0) != positive) return null;  // sign changed → outside polygon
+        }
+
+        // Inside → return the same single-point list we got from the plane
+        return planeHits;
+    }
+
+
 
 }

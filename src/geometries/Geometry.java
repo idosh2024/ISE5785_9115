@@ -3,13 +3,17 @@ package geometries;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Abstract class Geometry is the basic class representing a geometric body
  * in Euclidean 3D space.
  * All geometric shapes in the project will inherit from this class.
+ *
  * @author Ido
  */
-public abstract class Geometry {
+public abstract class Geometry implements Intersectable {
 
     /**
      * Returns the normal vector to the geometry at a given point on its surface.

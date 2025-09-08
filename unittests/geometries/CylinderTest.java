@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import primitives.*;
+import java.util.List;
 
 class CylinderTest {
 
@@ -42,6 +43,61 @@ class CylinderTest {
         // TC13: normal for a point on the EDGE of the far-from-axis (top) base
         assertEquals(v1, cyl.getNormal(new Point(5, 0, 11)),
                 "ERROR: Cylinder.getNormal - incorrect normal on top edge");
+    }
+
+    @Test
+    void testFindIntersections() {
+        // Cylinder: Z-axis, r=1, h=2 ; bases at z=0 and z=2
+        Cylinder cyl = new Cylinder(new Ray(new Point(0,0,0), new Vector(0,0,1)), 1d, 2d);
+
+        // ============ Equivalence Partitions ============
+
+        // EP-TC01: Cross mantle inside height (two hits)
+        var r1 = new Ray(new Point(-2, 0, 1), new Vector(1, 0, 0));
+        var h1 = cyl.findIntersections(r1);
+        assertNotNull(h1, "EP-TC01");
+        assertEquals(2, h1.size(), "EP-TC01");
+        assertEquals(List.of(new Point(-1,0,1), new Point(1,0,1)), h1,
+                "EP-TC01: order/points");
+
+        // EP-TC02: Same line but outside height (z=3) → 0 hits
+        assertNull(cyl.findIntersections(new Ray(new Point(-2, 0, 3), new Vector(1, 0, 0))),
+                "EP-TC02: outside height");
+
+        // EP-TC03: Through both caps, along axis (two cap hits)
+        var h3 = cyl.findIntersections(new Ray(new Point(0, 0, -1), new Vector(0, 0, 1)));
+        assertNotNull(h3, "EP-TC03");
+        assertEquals(2, h3.size(), "EP-TC03");
+        assertEquals(List.of(new Point(0,0,0), new Point(0,0,2)), h3,
+                "EP-TC03: cap points");
+
+        // =============== Boundary Values ===============
+
+        var h4 = cyl.findIntersections(new Ray(new Point(0,0,3), new Vector(0,0,-1)));
+        assertNotNull(h4, "BVA top");
+        assertEquals(2, h4.size(), "BVA top should hit both caps");
+        assertEquals(List.of(new Point(0,0,2), new Point(0,0,0)), h4);
+
+
+        // BVA: Start on bottom cap and go inside → only top cap
+        var h5 = cyl.findIntersections(new Ray(new Point(0, 0, 0), new Vector(0, 0, 1)));
+        assertNotNull(h5, "BVA bottom->in");
+        assertEquals(1, h5.size(), "BVA bottom->in");
+        assertEquals(new Point(0,0,2), h5.getFirst());
+
+        // BVA: Start on bottom cap and go outward → 0
+        assertNull(cyl.findIntersections(new Ray(new Point(0, 0, 0), new Vector(0, 0, -1))),
+                "BVA bottom->out");
+
+        // BVA: Start on mantle and go inward → 1 mantle hit
+        var h6 = cyl.findIntersections(new Ray(new Point(1, 0, 1), new Vector(-1, 0, 0)));
+        assertNotNull(h6, "BVA mantle->in");
+        assertEquals(1, h6.size(), "BVA mantle->in");
+        assertEquals(new Point(-1,0,1), h6.getFirst());
+
+        // BVA: Start on mantle and go outward → 0
+        assertNull(cyl.findIntersections(new Ray(new Point(1, 0, 1), new Vector(1, 0, 0))),
+                "BVA mantle->out");
     }
 
 }
