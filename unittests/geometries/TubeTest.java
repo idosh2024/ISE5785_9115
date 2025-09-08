@@ -24,6 +24,7 @@ class TubeTest {
                 "ERROR: tube.getNormal - incorrect tube vector for a point orthogonal to tube's ray");
     }
 
+    /// tests for findIntersections
     @Test
     void testFindIntersections() {
         // Tube around Z-axis, r=1
